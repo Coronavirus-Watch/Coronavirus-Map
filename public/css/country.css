@@ -1,0 +1,119 @@
+@import url('all.css');
+.container {
+	color: white;
+	padding: 1.5rem 0;
+}
+
+.timeline {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+	padding: 1rem;
+}
+
+.day {
+	flex-grow: 1;
+	margin: 0.5rem;
+	padding: 0.5rem 1rem 1rem 0.5rem;
+	border: 1px solid #888;
+	border-radius: 3px;
+	background-color: rgb(80, 80, 80);
+	box-shadow: 1px 2px 1px 2px #666;
+}
+.day:hover {
+	background-color: rgb(115, 115, 115);
+	cursor: pointer;
+}
+.day:hover h5 {
+	color: #eee;
+	font-weight: bold;
+}
+
+.day h5 {
+	text-align: left;
+	/* margin: 0;
+	padding: 0; */
+	color: #aaa;
+	font-weight: lighter;
+}
+
+.day ul {
+	margin: 0.5rem 0.5rem 0;
+	padding: 0;
+}
+
+.day li {
+	text-align: left;
+	list-style: none;
+}
+
+#countryName {
+	text-align: center;
+	color: white;
+	font-weight: bold;
+}
+
+.cases {
+	color: rgb(255, 165, 0);
+	font-weight: bold;
+}
+
+.deaths {
+	color: rgb(255, 127, 80);
+	font-weight: bold;
+}
+
+.recovered {
+	color: rgb(144, 238, 144);
+	font-weight: bold;
+}
+
+.number {
+	font-size: 140%;
+}
+
+.estimated {
+	opacity: 0.5;
+}
+
+.diff {
+	font-size: 85%;
+	margin-left: 5%;
+	font-style: italic;
+	color: white;
+}
+
+.countryForm {
+	padding: 2rem 0 0;
+	display: flex;
+	justify-content: center;
+	align-content: center;
+}
+
+.countryForm input {
+	border: none;
+	border-radius: 3px;
+	background-color: rgb(81, 81, 97);
+	color: #eee;
+	padding: 0.5rem;
+}
+
+.countryForm button {
+	border: none;
+	background-color: rgb(100, 100, 100);
+	padding: 0.5rem;
+	color: #eee;
+	font-weight: bold;
+	border-radius: 3px;
+}
+
+.timeline-day {
+	padding: 2rem;
+	margin: 10px 0;
+	background: rgb(45, 44, 53);
+	border: 3px solid rgb(81, 81, 97);
+	text-align: center;
+}
+
+#propsChart {
+	padding: 0 4rem;
+}

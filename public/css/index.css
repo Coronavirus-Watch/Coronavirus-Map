@@ -1,0 +1,56 @@
+@import url("all.css");
+
+/* Map Size */
+#map {
+	height: 70vh;
+	width: 100%;
+}
+
+.mapboxgl-popup-content p{
+	margin: 0;
+}
+
+.controller {
+	min-height: 10vh;
+	background-color: rgb(49, 54, 58);
+	padding: 1rem;
+	display: none;
+}
+.controller {
+	color: #eee;
+}
+
+.controller .features {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	width: 6rem;
+}
+
+.controller .sliderWrap input {
+	min-width: 100%;
+	/* background-color: blue; */
+}
+
+.controller .sliderWrap .attributes {
+	display: flex;
+	width: 50%;
+	margin: 0 auto;
+	align-content: center;
+	line-height: 25px;
+	justify-content: space-around;
+}
+
+.featureGroup {
+	display: flex;
+	justify-content: space-between;
+	align-content: flex-end;
+}
+
+.mapboxgl-marker {
+	background-image: none;
+	background-size: cover;
+	width: 20px;
+	height: 20px;
+	cursor: pointer;
+}

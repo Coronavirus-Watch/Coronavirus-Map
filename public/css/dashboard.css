@@ -1,0 +1,9 @@
+@import url('all.css');
+
+.wrapper {
+  display: flex;
+}
+
+.totals {
+  color: white;
+}

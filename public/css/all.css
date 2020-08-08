@@ -1,0 +1,11 @@
+/* Sets fonts */
+* {
+	font-family: 'Quicksand', sans-serif;
+}
+
+body {
+	background-color: rgb(49, 54, 58);
+}
+.navbar {
+	min-height: 4vh;
+}

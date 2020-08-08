@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8" />
+	<title>Coronavirus Watch</title>
+	<link rel="icon" type="image/svg+xml" href="favicon.svg">
+	<link rel="old ico" href="favicon.ico" type="image/x-icon">
+	<!-- <link rel="alternate icon" href="/favicon.ico"> -->
+	<!-- <link rel="icon" type="image/svg+xml" href="img/bug.svg"> -->
+	<!-- <link rel="alternate icon" href="img/bug.ico"> -->
+
+	<!-- Enables responsiveness -->
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+	<!-- Font -->
+	<link href="https://fonts.googleapis.com/css?family=Quicksand&display=swap" rel="stylesheet" />
+	<!-- Bootstrap Stylesheet -->
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+		integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous" />
+	<!-- Bootstrap Javascript -->
+	<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+		integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous">
+		</script>
+	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+		integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous">
+		</script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+		integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous">
+		</script>
+	<!-- Map Stylesheet -->
+	<!-- <link href="https://api.mapbox.com/mapbox-gl-js/v1.7.0/mapbox-gl.css" rel="stylesheet" /> -->
+	<!-- Map Script -->
+	<!-- <script src="https://api.mapbox.com/mapbox-gl-js/v1.7.0/mapbox-gl.js"></script>  -->
+
+	<script src='https://api.mapbox.com/mapbox-gl-js/v1.11.1/mapbox-gl.js'></script>
+	<link href='https://api.mapbox.com/mapbox-gl-js/v1.11.1/mapbox-gl.css' rel='stylesheet' />
+
+
+	<!-- Main external stylesheet -->
+	<link rel="stylesheet" type="text/css" href="css/index.css" />
+</head>
+
+<body>
+	<!-- Navigation Bar -->
+	<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+		<a class="navbar-brand" href="/">
+			<!-- Credits from: https://www.flaticon.com/free-icon/bug_490865 -->
+			<img src="img/bug.svg" width="30" height="30" class="d-inline-block align-top" alt="" />
+			Coronavirus Watch
+		</a>
+		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+			aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+		<div class="collapse navbar-collapse" id="navbarSupportedContent">
+			<ul class="navbar-nav mr-auto">
+				<li class="nav-item">
+					<a class="nav-link active" href="/">Home</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="/dashboard.html">Dashboard</a>
+				</li>
+			</ul>
+			<form class="form-inline my-2 my-lg-0">
+				<input class="form-control mr-sm-2 " type="search" placeholder="Enter Country name..."
+					aria-label="Search" id="search" />
+				<a class="btn-outline-success btn text-success" id="searchLink">
+					Search
+					</button>
+				</a>
+			</form>
+		</div>
+	</nav>
+
+	<!-- Displays map -->
+	<div id="map"></div>
+	<div class="controller">
+		<div class="sliderWrap">
+			<h4 id="dateDisplayed">Date: 22/01/2020</h4>
+			<input type="range" min="0" max="70" step="1" value="0" id="dateSlider" />
+			<div class="attributes">
+				<fieldset>
+					<label>Cases</label>
+					<input type="radio" name="attribute" id="cases" value="cases" checked />
+				</fieldset>
+				<fieldset>
+					<label>Deaths</label>
+					<input type="radio" name="attribute" id="deaths" value="deaths" />
+				</fieldset>
+				<fieldset>
+					<label>Recovered</label>
+					<input type="radio" name="attribute" id="recovered" value="recovered" />
+				</fieldset>
+			</div>
+		</div>
+		<div class="features">
+			<div class="featureGroup">
+				<label>Countries</label>
+				<input type="checkbox" name="markers" id="markers" />
+			</div>
+		</div>
+	</div>
+	<script type="module" src="js/map.js"></script>
+	<script src="js/utils.js"></script>
+</body>
+
+</html>
