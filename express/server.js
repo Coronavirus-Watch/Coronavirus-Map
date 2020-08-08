@@ -78,11 +78,11 @@ async function download() {
     date.setHours(6, 0, 0, 0)
 
     // // Calculates millisecond date for today to compare against other dates
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
+    // const yesterday = new Date();
+    // yesterday.setDate(yesterday.getDate() - 1);
 
     // For testing purposes - replaces two lines above
-    // const yesterday = new Date('2020-01-24');
+    const yesterday = new Date('2020-01-24');
 
     // Runs though all the files until yesterday's file is reached
     while (date.valueOf() < yesterday.valueOf()) {
