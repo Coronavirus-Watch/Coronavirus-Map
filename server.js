@@ -10,7 +10,6 @@
 
 // Imports npm modules
 const express = require('express');
-const mime = require('mime');
 const path = require('path');
 const schedule = require('node-schedule');
 
@@ -124,7 +123,7 @@ app.get('/day/:day', async (req, res) =>
 );
 
 // API Endpoint for range in Timeline
-app.get('/range', async (req, res) => 
+app.get('/range', async (req, res) =>
     res.send({ range: timeline.days.length })
 );
 
@@ -160,13 +159,13 @@ app.get('/country/:country', async (req, res) => {
     res.send({ timeline: countryTimeline, search: req.params.country });
 });
 
-app.get('/alldays', async (req, res) => 
+app.get('/alldays', async (req, res) =>
     res.send({ theTimeline: timeline.days })
 );
 
 // Serves other files
 app.get('/*', async (req, res) => {
-    const filename = req.params[0];  
+    const filename = req.params[0];
     // res.contentType(mime.getType(filename));
     // // Lookups and sends appropriate file
     // res.send(importFile(`${rootPath}\\public\\${filename}`));
