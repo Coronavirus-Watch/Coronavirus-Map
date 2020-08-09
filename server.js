@@ -35,11 +35,6 @@ const port = process.env.PORT || 3000;
 	Main code
  */
 
-// Setting up Express Server
-const app = express();
-app.use(express.static(path.join(__dirname, 'public')));
-app.listen(port, () => console.log(`Express server is running on port ${port}\n`));
-
 const timeline = new Timeline();
 
 // Updates and formats coronavirus dataset every day at 06:00
@@ -112,6 +107,11 @@ function getDownloadDate(date) {
 /*
 *	API Endpoints
 */
+
+// Setting up Express Server
+const app = express();
+app.use(express.static(path.join(__dirname, 'public')));
+app.listen(port, () => console.log(`Express server is running on port ${port}\n`));
 
 // Serves index.html
 app.get('/', async (req, res) => {
