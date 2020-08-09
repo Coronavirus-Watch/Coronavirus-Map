@@ -4,8 +4,21 @@
 	Data source: https://github.com/CSSEGISandData/COVID-19/tree/master/csse_covid_19_data/csse_covid_19_daily_reports
  */
 
-// AWS Lambda
-'use strict';
+/*
+	Required Imports
+ */
+
+// Imports npm modules
+const express = require('express');
+const mime = require('mime');
+const path = require('path');
+const schedule = require('node-schedule');
+
+// Imports our external modules
+const { } = require(path.join(__dirname, 'utils/dateUtils'));
+const { requestFile } = require(path.join(__dirname, 'utils/downloadUtils'));
+const { importFile, exportCsv, exportJson, exportCountryCsv } = require(path.join(__dirname, 'utils/fileUtils'));
+const Timeline = require(path.join(__dirname, 'components/Timeline'));
 
 /*
 	User constants
@@ -13,28 +26,10 @@
 const verbose = true;
 const version = "2.0.0";
 // Link to source data
-const source =
-    'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports';
-const rootPath = __dirname.slice(0, __dirname.indexOf('express'));
+const source = 'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports';
 // Path to store the parsed and exported JSON
-const exportPath = `${rootPath}\data`;
-
-/*
-	Other Imports
- */
-
-// Imports npm modules
-const bodyParser = require('body-parser');
-const express = require('express');
-const mime = require('mime');
-const schedule = require('node-schedule');
-const serverless = require('serverless-http');
-
-// Imports our external modules
-const { } = require('../utils/dateUtils');
-const { requestFile } = require('../utils/downloadUtils');
-const { importFile, exportFile, exportCsv, exportJson, exportCountryCsv } = require('../utils/fileUtils');
-const Timeline = require('../components/Timeline');
+const exportPath = path.join(__dirname, `data`);
+const port = process.env.PORT || 3000;
 
 /*
 	Main code
@@ -42,7 +37,8 @@ const Timeline = require('../components/Timeline');
 
 // Setting up Express Server
 const app = express();
-app.use(bodyParser.json());
+app.use(express.static(path.join(__dirname, 'public')));
+app.listen(port, () => console.log(`Express server is running on port ${port}\n`));
 
 const timeline = new Timeline();
 
@@ -60,11 +56,11 @@ async function sync() {
     // parses downloaded files into JSON
     const days = await timeline.init(files);
     // exports parsed data to json file
-    exportJson(days, exportPath + `\\timeline.json`);
+    exportJson(days, path.join(exportPath, `timeline.json`));
     // exports parsed data to csv file
-    exportCsv(days, exportPath + `\\timeline.csv`);
+    exportCsv(days, path.join(exportPath, `timeline.csv`));
     // exports parsed data to countries csv file
-    // exportCountryCsv(days, exportPath + 'countries.csv');
+    // exportCountryCsv(days, path.join(exportPath, `countries.csv`));
 }
 
 // Downloads files from source and returns a data structure containing
@@ -119,8 +115,7 @@ function getDownloadDate(date) {
 
 // Serves index.html
 app.get('/', async (req, res) => {
-    res.setHeader('Content-Type', 'text/html')
-    res.send(importFile(`${rootPath}\\public\\index.html`))
+    res.sendFile(path.join(__dirname, `public\\index.html`))
 });
 
 // API Endpoint for certain Day in Timeline
@@ -172,10 +167,8 @@ app.get('/alldays', async (req, res) =>
 // Serves other files
 app.get('/*', async (req, res) => {
     const filename = req.params[0];  
-    res.contentType(mime.getType(filename));
-    // Lookups and sends appropriate file
-    res.send(importFile(`${rootPath}\\public\\${filename}`));
+    // res.contentType(mime.getType(filename));
+    // // Lookups and sends appropriate file
+    // res.send(importFile(`${rootPath}\\public\\${filename}`));
+    res.sendFile(path.join(__dirname, `public\\${filename}`))
 });
-
-module.exports = app;
-module.exports.handler = serverless(app);
