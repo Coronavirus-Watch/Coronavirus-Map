@@ -3,20 +3,24 @@ const axios = require('axios');
 module.exports = {
     // requests file content using link parameter
     async requestFile(path) {
+        if (typeof path !== 'string') return;
+
         // Sends an HTTP request to "path" and returns text content
         let fileContents = await axios({
             url: path,
             responseType: 'blob',
             method: 'get'
         })
-            .then(response => response.data)
-            .catch(error => console.error(error));
+            .then(async response => response.data)
+            .catch(error => console.error(`Error: Failed to download file from url ${path}`));
 
         // returns data fetched from source
         return fileContents;
     },
 
     async fetchCountryDetails() {
+        if (typeof path !== 'string') return;
+
         return axios({
             method: "GET",
             url: "https://restcountries-v1.p.rapidapi.com/all",
@@ -26,11 +30,7 @@ module.exports = {
                 "x-rapidapi-key": "42752e8809msh0edf75d88c1b7e7p177e3djsn05d91367a12a"
             }
         })
-            .then(async response => {
-                return response.data;
-            })
-            .catch(error => {
-                console.log("Couldn't find country details", error);
-            });
+            .then(async response => response.data)
+            .catch(error => console.error(`Error: Couldn't find country details ${error}`));
     }
 };

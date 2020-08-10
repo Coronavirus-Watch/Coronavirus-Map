@@ -3,12 +3,12 @@ const fs = require('fs');
 module.exports = {
     // Creates a directory if it doesn't exist
     createDirectory(directory) {
-        if (!fs.existsSync(directory)){
-            fs.mkdirSync(directory, {recursive: true, encoding: 'utf8'});
-        }
+        if (typeof directory != 'string') return; 
+        if (!fs.existsSync(directory)) fs.mkdirSync(directory, {recursive: true, encoding: 'utf8'});
     },
 
     checkPath(path) {
+        if (typeof path != 'string') return;
         const directory = path.slice(0, path.lastIndexOf(`\\`));
         module.exports.createDirectory(directory);
     },
@@ -28,7 +28,7 @@ module.exports = {
         try {
             module.exports.checkPath(path);
             fs.writeFileSync(path, content, 'utf8');
-            console.log(`Exported to ${path}`);
+            // console.log(`Exported to ${path}`);
         } catch (error) {
             console.error(error);
         }
@@ -55,7 +55,7 @@ module.exports = {
         // Loops through each day, appending to the output variable
         days.forEach(day => {
             day.countries.forEach(country => {
-                output += `${country.name},${country.cases},${country.deaths},${country.recovered},${country.population},${country.continent},${day.date}\n`;
+                output += `${country.name}, ${country.cases}, ${country.deaths}, ${country.recovered}, ${country.population}, ${country.continent}, ${day.date}\n`;
             });
         });
 
@@ -68,13 +68,7 @@ module.exports = {
         const {countries} = days[days.length - 1];
 
         // creates output string with formatted attributes
-        const output =
-            countries.name +
-            ',' +
-            countries.population +
-            ',' +
-            countries.continent +
-            '\n';
+        const output = `${countries.name}, ${countries.population}, ${countries.continent}\n`;
 
         module.exports.exportFile(output,path);
     }
