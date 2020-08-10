@@ -14,7 +14,7 @@ const path = require('path');
 const schedule = require('node-schedule');
 
 // Imports our external modules
-const { } = require(path.join(__dirname, 'utils/dateUtils'));
+const { dateObjToDownloadDate } = require(path.join(__dirname, 'utils/dateUtils'));
 const { requestFile } = require(path.join(__dirname, 'utils/downloadUtils'));
 const { importFile, exportCsv, exportJson, exportCountryCsv } = require(path.join(__dirname, 'utils/fileUtils'));
 const Timeline = require(path.join(__dirname, 'components/Timeline'));
@@ -77,7 +77,7 @@ async function download() {
     // Runs though all the files until yesterday's file is reached
     while (date.valueOf() < yesterday.valueOf()) {
         // Returns the date formatted as used in the url for files
-        const formatted = getDownloadDate(date);
+        const formatted = dateObjToDownloadDate(date);
         const filePath = source + '/' + formatted + '.csv';
 
         // Downloads the file content
@@ -93,14 +93,6 @@ async function download() {
 
     // returns resulting file data structure
     return files;
-}
-
-// Returns the date formatted as used in the url for files
-function getDownloadDate(date) {
-    const day = ('0' + date.getDate()).slice(-2);
-    const month = ('0' + (date.getMonth() + 1)).slice(-2);
-    const year = date.getFullYear();
-    return month + '-' + day + '-' + year;
 }
 
 /*
@@ -166,8 +158,5 @@ app.get('/alldays', async (req, res) =>
 // Serves other files
 app.get('/*', async (req, res) => {
     const filename = req.params[0];
-    // res.contentType(mime.getType(filename));
-    // // Lookups and sends appropriate file
-    // res.send(importFile(`${rootPath}\\public\\${filename}`));
     res.sendFile(path.join(__dirname, `public\\${filename}`))
 });

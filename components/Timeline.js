@@ -1,4 +1,6 @@
-const {fetchCountryDetails} = require("../utils/downloadUtils");
+const path = require('path');
+const { downloadDateToStorageDate, dateObjToStorageDate, downloadDateToDateObj } = require(path.join(__dirname, '../utils/dateUtils'));
+const { fetchCountryDetails } = require(path.join(__dirname, '../utils/downloadUtils'));
 const Day = require("./Day");
 
 const FUTURE_DAYS = 0;
@@ -55,8 +57,8 @@ class Timeline {
 	}
 
 	extractData(day, filename, regionLine) {
-		// Calculates formatted date using the downloaded filename
-		const date = this.getFormattedDate(filename);
+		// Calculates storage date using the downloaded filename
+		const storageDate = downloadDateToStorageDate(filename);
 		const countryStats = this.getCountryStats(filename, regionLine);
 		// Blank entry was detected
 		if (countryStats === -1) {
@@ -65,13 +67,13 @@ class Timeline {
 		// Looks up other information from country details array
 		const countryDetails = this.searchCountryDetails(countryStats.searchName);
 		// 
-		this.mergeData(day, date, countryStats, countryDetails);
+		this.mergeData(day, storageDate, countryStats, countryDetails);
 	}
 
 	getCountryStats(filename, regionLine) {
 		try {
 			const cutOff = new Date(2020, 3, 22);
-			const dateObj = this.convertToDateObj(filename);
+			const dateObj = downloadDateToDateObj(filename);
 			// Determines which country statistics extractor to use
 			if (dateObj < cutOff) {
 				return this.getCountryStatsV1(regionLine);
@@ -131,7 +133,7 @@ class Timeline {
 	}
 
 	// Extracts data from the line and adds it to the appropriate day
-	mergeData(day, date, countryStats, countryDetails) {
+	mergeData(day, storageDate, countryStats, countryDetails) {
 		try {
 			const {
 				cases,
@@ -158,7 +160,7 @@ class Timeline {
 				deaths,
 				recovered,
 				countryName,
-				date,
+				storageDate,
 				population,
 				latlng,
 				continent,
@@ -269,7 +271,7 @@ class Timeline {
 					coordinates,
 					continent
 				} = country;
-				const date = this.getStorageDate(today);
+				const storageDate = dateObjToStorageDate(today);
 				const increases = this.calculateIncrease(country.name);
 				// console.log("Day:", date, "Country:", country.name, increases);
 				futureDay.addData(
@@ -277,7 +279,7 @@ class Timeline {
 					deaths + (deaths * increases[1]),
 					recovered + (recovered * increases[2]),
 					name,
-					date,
+					storageDate,
 					population,
 					[coordinates[1], coordinates[0]],
 					continent
@@ -316,44 +318,6 @@ class Timeline {
 			console.log(e);
 			return [0, 0, 0];
 		}
-	}
-
-	// Calculates formatted date using the downloaded filename
-	getFormattedDate(downloadDate) {
-		// Removes extension if necessary
-		if (downloadDate.endsWith(".csv")) {
-			downloadDate.replace(".csv", "");
-		}
-		// Parses all date sections
-		const sections = downloadDate.split("-");
-		const day = sections[1];
-		const month = sections[0];
-		const year = sections[2];
-		const dateVar = day + "/" + month + "/" + year;
-		return dateVar;
-	}
-
-	// Returns the date formatted as used in the url for files
-	getStorageDate(date) {
-		const day = ("0" + date.getDate()).slice(-2);
-		const month = ("0" + (date.getMonth() + 1)).slice(-2);
-		const year = date.getFullYear();
-		const dateVar = day + "/" + month + "/" + year;
-		return dateVar;
-	}
-
-	convertToDateObj(dateString) {
-		// Removes extension if necessary
-		if (dateString.endsWith(".csv")) {
-			dateString.replace(".csv", "");
-		}
-		// Parses all date sections
-		const sections = dateString.split("-");
-		const day = sections[1];
-		const month = sections[0];
-		const year = sections[2];
-		let dateVar = new Date(year, month, day);
-		return dateVar;
 	}
 
 	// Changes country names from downloaded files into ones that are used to store countries
