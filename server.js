@@ -12,6 +12,7 @@
 const express = require('express');
 const path = require('path');
 const schedule = require('node-schedule');
+const { dateObjToDownloadDate, dateObjToStorageDate } = require('./utils/dateUtils');
 
 // Imports our external modules
 const { dateObjToDownloadDate } = require(path.join(__dirname, 'utils/dateUtils'));
@@ -76,16 +77,17 @@ async function download() {
 
     // Runs though all the files until yesterday's file is reached
     while (date.valueOf() < yesterday.valueOf()) {
-        // Returns the date formatted as used in the url for files
-        const formatted = dateObjToDownloadDate(date);
-        const filePath = source + '/' + formatted + '.csv';
+        // Returns the download date formatted as used in the url for files
+        const downloadDate = dateObjToDownloadDate(date);
+        const storageDate = dateObjToStorageDate(date);
+        const filePath = source + '/' + downloadDate + '.csv';
 
         // Downloads the file content
         const fileData = await requestFile(filePath);
         if (typeof fileData !== 'undefined') {
-            if (verbose) console.log(`File Downloaded: ${formatted}.csv`);
+            if (verbose) console.log(`File Downloaded: ${downloadDate}.csv`);
             // Pushes content and path to data structure
-            files.push([formatted, fileData]);
+            files.push([downloadDate, fileData]);
         }
         // Increments to next day
         date.setDate(date.getDate() + 1);
@@ -95,14 +97,14 @@ async function download() {
     return files;
 }
 
-/*
-*	API Endpoints
-*/
-
 // Setting up Express Server
 const app = express();
 app.use(express.static(path.join(__dirname, 'public')));
 app.listen(port, () => console.log(`Express server is running on port ${port}\n`));
+
+/*
+*	API Endpoints
+*/
 
 // Serves index.html
 app.get('/', async (req, res) => {

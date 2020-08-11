@@ -1,14 +1,17 @@
+/*
+	Required Imports
+ */
 const fs = require('fs');
 
 module.exports = {
     // Creates a directory if it doesn't exist
     createDirectory(directory) {
-        if (typeof directory != 'string') return; 
+        if (typeof directory !== 'string') return; 
         if (!fs.existsSync(directory)) fs.mkdirSync(directory, {recursive: true, encoding: 'utf8'});
     },
 
     checkPath(path) {
-        if (typeof path != 'string') return;
+        if (typeof path !== 'string') return;
         const directory = path.slice(0, path.lastIndexOf(`\\`));
         module.exports.createDirectory(directory);
     },
@@ -36,20 +39,21 @@ module.exports = {
 
     // exports JSON to path given
     exportJson(days, path) {
+        if (typeof days !== 'object' || typeof path !== 'string') return;
         let json = [];
+
         // Loops through each day, appending to the JSON object
         days.forEach(element => {
             json[json.length] = JSON.stringify(element);
         });
 
         let output = JSON.stringify(days, null, 4);
-
         module.exports.exportFile(output, path);
     },
 
     // exports CSV to path given
     exportCsv(days, path) {
-        // initialises CSV string
+        if (typeof days !== 'object' || typeof path !== 'string') return;
         let output = '';
 
         // Loops through each day, appending to the output variable

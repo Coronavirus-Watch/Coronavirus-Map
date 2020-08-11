@@ -1,19 +1,32 @@
+/*
+	Required Imports
+ */
 const path = require('path');
-const { downloadDateToStorageDate, dateObjToStorageDate, downloadDateToDateObj } = require(path.join(__dirname, '../utils/dateUtils'));
+
+// Imports our external modules
+const { downloadDateToStorageDate, downloadDateToDateObj } = require(path.join(__dirname, '../utils/dateUtils'));
 const { fetchCountryDetails } = require(path.join(__dirname, '../utils/downloadUtils'));
 const Day = require("./Day");
 
-const FUTURE_DAYS = 0;
+/*
+	User constants
+ */
+// const FUTURE_DAYS = 0;
 
+/*
+	Class
+ */
 class Timeline {
 	constructor() {
 		this.days = [];
 	}
 
 	async init(files) {
-		this.details = await fetchCountryDetails();
+		// Fetches country details such as population for all countries
+		this.worldDetails = await fetchCountryDetails();
+		// Processes 
 		await this.processFiles(files);
-		await this.futureDays();
+		// await this.futureDays();
 		await this.genGeoJSON();
 		// console.log(this.days);
 		// console.log(await this.days[0]);
@@ -37,21 +50,20 @@ class Timeline {
 		content = this.dealsWithQuoteMarks(content);
 		// Seperating each lines
 		const lines = content.split("\n");
-		for (let i = 1; i < lines.length; i++) {
+
+		for (let row = 1; row < lines.length; row++) {
 			// Segments each line
-			const regionLine = lines[i].split(",", -1);
+			const regionLine = lines[row].split(",", -1);
+
 			// Makes any elements that are blank 0
-			for (let index = 1; index < regionLine.length; index++) {
-				if (!regionLine[index] || regionLine[index].includes("\r")) {
-					regionLine[index] = "0";
-				}
+			for (let column = 1; column < regionLine.length; column++) {
+				if (!regionLine[column] || regionLine[column].includes("\r")) regionLine[column] = "0"
 			}
-			// Prevents an error with undefined fields
-			if (typeof regionLine[1] !== "undefined") {
-				// Extracts data from the line and adds it to the appropriate day
-				this.extractData(day, filename, regionLine);
-			}
+
+			// Extracts data from the line and adds it to the appropriate day
+			if (typeof regionLine[1] !== "undefined") this.extractData(day, filename, regionLine);
 		}
+
 		this.days.push(day);
 		return;
 	}
@@ -135,37 +147,18 @@ class Timeline {
 	// Extracts data from the line and adds it to the appropriate day
 	mergeData(day, storageDate, countryStats, countryDetails) {
 		try {
-			const {
-				cases,
-				deaths,
-				recovered,
-				countryName,
-				searchName
-			} = countryStats;
+			// Extracts coronavirus information
+			const { cases, deaths, recovered, countryName, searchName } = countryStats;
 
 			// Checks for country details lookup error 
-			if (typeof countryDetails === "undefined")
-				throw "Error finding country details for: " + searchName;
+			if (typeof countryDetails === "undefined") throw "Error finding country details for: " + searchName;
 
-			const {
-				population,
-				latlng,
-				region: continent,
-				altSpellings
-			} = countryDetails;
+			// Extracts country details information
+			const { population, latlng, region: continent, altSpellings } = countryDetails;
 
 			// Adds data to the day
-			let country = day.addData(
-				cases,
-				deaths,
-				recovered,
-				countryName,
-				storageDate,
-				population,
-				latlng,
-				continent,
-				altSpellings
-			);
+			let country = day.addData(cases, deaths, recovered, countryName, storageDate, population, latlng, continent, altSpellings);
+
 			// 
 			this.compareData(country, countryName);
 
@@ -214,7 +207,7 @@ class Timeline {
 
 	// Looks up information about a country from the country details array
 	searchCountryDetails(name) {
-		return this.details.filter(country => {
+		return this.worldDetails.filter(country => {
 			if (country.name === name) return true;
 			return country.altSpellings.includes(name);
 		})[0];
@@ -250,75 +243,75 @@ class Timeline {
 		});
 	}
 
-	// Creates the days in the future that are predictions
-	futureDays() {
-		// Helps generate the formatted date
-		let today = new Date();
-		today.setHours(0, 0, 0, 0);
+	// // Creates the days in the future that are predictions
+	// futureDays() {
+	// 	// Helps generate the formatted date
+	// 	let today = new Date();
+	// 	today.setHours(0, 0, 0, 0);
 
-		// Adds each day in the future
-		for (let c = 0; c < FUTURE_DAYS; c++) {
-			let lastDay = this.days[this.days.length - 1];
-			let futureDay = new Day();
-			futureDay.isEstimation = true;
-			lastDay.countries.forEach(country => {
-				const {
-					cases,
-					deaths,
-					recovered,
-					name,
-					population,
-					coordinates,
-					continent
-				} = country;
-				const storageDate = dateObjToStorageDate(today);
-				const increases = this.calculateIncrease(country.name);
-				// console.log("Day:", date, "Country:", country.name, increases);
-				futureDay.addData(
-					cases + (cases * increases[0]),
-					deaths + (deaths * increases[1]),
-					recovered + (recovered * increases[2]),
-					name,
-					storageDate,
-					population,
-					[coordinates[1], coordinates[0]],
-					continent
-				);
-			});
+	// 	// Adds each day in the future
+	// 	for (let c = 0; c < FUTURE_DAYS; c++) {
+	// 		let lastDay = this.days[this.days.length - 1];
+	// 		let futureDay = new Day();
+	// 		futureDay.isEstimation = true;
+	// 		lastDay.countries.forEach(country => {
+	// 			const {
+	// 				cases,
+	// 				deaths,
+	// 				recovered,
+	// 				name,
+	// 				population,
+	// 				coordinates,
+	// 				continent
+	// 			} = country;
+	// 			const storageDate = dateObjToStorageDate(today);
+	// 			const increases = this.calculateIncrease(country.name);
+	// 			// console.log("Day:", date, "Country:", country.name, increases);
+	// 			futureDay.addData(
+	// 				cases + (cases * increases[0]),
+	// 				deaths + (deaths * increases[1]),
+	// 				recovered + (recovered * increases[2]),
+	// 				name,
+	// 				storageDate,
+	// 				population,
+	// 				[coordinates[1], coordinates[0]],
+	// 				continent
+	// 			);
+	// 		});
 
-			this.days.push(futureDay);
-			today.setDate(today.getDate() + 1);
-		}
-	}
+	// 		this.days.push(futureDay);
+	// 		today.setDate(today.getDate() + 1);
+	// 	}
+	// }
 
-	calculateIncrease(countryName) {
-		const ESTIMATED_INCREASE_DAYS = 3;
+	// calculateIncrease(countryName) {
+	// 	const ESTIMATED_INCREASE_DAYS = 3;
 
-		const startIndex = this.days.length - ESTIMATED_INCREASE_DAYS;
-		const lastIndex = this.days.length - 1;
-		try {
-			if (startIndex < 0 || lastIndex < 0) throw "Negative day index";
-			let startDay = this.days[startIndex];
-			let lastDay = this.days[lastIndex];
-			const startCountryIndex = startDay.searchForCountry(countryName);
-			const lastCountryIndex = lastDay.searchForCountry(countryName);
-			if (startCountryIndex < 0 || lastCountryIndex < 0) throw "Negative country index";
-			let startCountry = startDay.countries[startCountryIndex];
-			let lastCountry = lastDay.countries[lastCountryIndex];
-			// Average increases in cases
-			let aiCases = (lastCountry.cases - startCountry.cases) / startCountry.cases / ESTIMATED_INCREASE_DAYS;
-			if (isNaN(aiCases)) aiCases = 0;
-			let aiDeaths = (lastCountry.deaths - startCountry.deaths) / startCountry.deaths / ESTIMATED_INCREASE_DAYS;
-			if (isNaN(aiDeaths)) aiDeaths = 0;
-			let aiRecovered = (lastCountry.recovered - startCountry.recovered) / startCountry.recovered / ESTIMATED_INCREASE_DAYS;
-			if (isNaN(aiRecovered)) aiRecovered = 0;
-			return [aiCases, aiDeaths, aiRecovered];
-		}
-		catch (e) {
-			console.log(e);
-			return [0, 0, 0];
-		}
-	}
+	// 	const startIndex = this.days.length - ESTIMATED_INCREASE_DAYS;
+	// 	const lastIndex = this.days.length - 1;
+	// 	try {
+	// 		if (startIndex < 0 || lastIndex < 0) throw "Negative day index";
+	// 		let startDay = this.days[startIndex];
+	// 		let lastDay = this.days[lastIndex];
+	// 		const startCountryIndex = startDay.searchForCountry(countryName);
+	// 		const lastCountryIndex = lastDay.searchForCountry(countryName);
+	// 		if (startCountryIndex < 0 || lastCountryIndex < 0) throw "Negative country index";
+	// 		let startCountry = startDay.countries[startCountryIndex];
+	// 		let lastCountry = lastDay.countries[lastCountryIndex];
+	// 		// Average increases in cases
+	// 		let aiCases = (lastCountry.cases - startCountry.cases) / startCountry.cases / ESTIMATED_INCREASE_DAYS;
+	// 		if (isNaN(aiCases)) aiCases = 0;
+	// 		let aiDeaths = (lastCountry.deaths - startCountry.deaths) / startCountry.deaths / ESTIMATED_INCREASE_DAYS;
+	// 		if (isNaN(aiDeaths)) aiDeaths = 0;
+	// 		let aiRecovered = (lastCountry.recovered - startCountry.recovered) / startCountry.recovered / ESTIMATED_INCREASE_DAYS;
+	// 		if (isNaN(aiRecovered)) aiRecovered = 0;
+	// 		return [aiCases, aiDeaths, aiRecovered];
+	// 	}
+	// 	catch (e) {
+	// 		console.log(e);
+	// 		return [0, 0, 0];
+	// 	}
+	// }
 
 	// Changes country names from downloaded files into ones that are used to store countries
 	dictStore(countryName) {
