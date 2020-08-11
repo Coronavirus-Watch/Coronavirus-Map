@@ -12,19 +12,19 @@
 const express = require('express');
 const path = require('path');
 const schedule = require('node-schedule');
-const { dateObjToDownloadDate, dateObjToStorageDate } = require('./utils/dateUtils');
 
-// Imports our external modules
-const { dateObjToDownloadDate } = require(path.join(__dirname, 'utils/dateUtils'));
+// Imports our external modules and files
+const { dateObjToDownloadDate, dateObjToStorageDate } = require(path.join(__dirname, 'utils/dateUtils'));
 const { requestFile } = require(path.join(__dirname, 'utils/downloadUtils'));
 const { importFile, exportCsv, exportJson, exportCountryCsv } = require(path.join(__dirname, 'utils/fileUtils'));
 const Timeline = require(path.join(__dirname, 'components/Timeline'));
+const packageJson = JSON.parse(importFile(path.join(__dirname, 'package.json')));
 
 /*
 	User constants
  */
+const testing = false;
 const verbose = true;
-const version = "2.0.0";
 // Link to source data
 const source = 'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports';
 // Path to store the parsed and exported JSON
@@ -45,7 +45,7 @@ sync();
 
 // Updates and formats coronavirus dataset
 async function sync() {
-    console.log(`Coronavirus Map Server Version: ${version}\n`);
+    console.log(`Coronavirus Map Server Version: ${packageJson.version}\n`);
     // downloads files from source
     let files = await download();
     // parses downloaded files into JSON
@@ -56,6 +56,7 @@ async function sync() {
     exportCsv(days, path.join(exportPath, `timeline.csv`));
     // exports parsed data to countries csv file
     // exportCountryCsv(days, path.join(exportPath, `countries.csv`));
+    console.log('Sync completed successfully');
 }
 
 // Downloads files from source and returns a data structure containing
@@ -68,12 +69,12 @@ async function download() {
     let date = new Date('2020-01-22');
     date.setHours(6, 0, 0, 0)
 
-    // // Calculates millisecond date for today to compare against other dates
-    const yesterday = new Date();
+    // Calculates millisecond date for today to compare against other dates
+    let yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
 
-    // For testing purposes - replaces two lines above
-    // const yesterday = new Date('2020-01-24');
+    // For testing purposes downloads and processes only two first files
+    if (testing) yesterday = new Date('2020-01-24');
 
     // Runs though all the files until yesterday's file is reached
     while (date.valueOf() < yesterday.valueOf()) {
