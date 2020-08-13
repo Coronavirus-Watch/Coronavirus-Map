@@ -1,29 +1,29 @@
 {
-  "name": "coronavirus-map",
-  "version": "2.1",
-  "description": "Website to visualise coronavirus data over time by country",
-  "main": "./express/server.js",
-  "dependencies": {
-    "axios": "^0.19.2",
-    "dot-prop": "^5.2.0",
-    "express": "^4.17.1",
-    "is-ci": "^2.0.0",
-    "node-fetch": "^2.6.0",
-    "node-schedule": "^1.3.2",
-    "rimraf": "^3.0.2",
-    "which": "^2.0.2"
-  },
-  "scripts": {
-    "start": "node server.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Coronavirus-Watch/Coronavirus-Map.git"
-  },
-  "author": "Max Kelly and Ramsay Sewell",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/Coronavirus-Watch/Coronavirus-Map/issues"
-  },
-  "homepage": "https://github.com/Coronavirus-Watch/Coronavirus-Map#readme"
+	"name": "coronavirus-map",
+	"version": "2.1",
+	"description": "Website to visualise coronavirus data over time by country",
+	"main": "server.js",
+	"dependencies": {
+		"axios": "^0.19.2",
+		"dot-prop": "^5.2.0",
+		"express": "^4.17.1",
+		"is-ci": "^2.0.0",
+		"node-fetch": "^2.6.0",
+		"node-schedule": "^1.3.2",
+		"rimraf": "^3.0.2",
+		"which": "^2.0.2"
+	},
+	"scripts": {
+		"start": "node server.js"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/Coronavirus-Watch/Coronavirus-Map.git"
+	},
+	"author": "Max Kelly and Ramsay Sewell",
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/Coronavirus-Watch/Coronavirus-Map/issues"
+	},
+	"homepage": "https://github.com/Coronavirus-Watch/Coronavirus-Map#readme"
 }
