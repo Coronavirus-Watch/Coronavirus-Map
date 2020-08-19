@@ -23,7 +23,7 @@ const packageJson = JSON.parse(importFile(path.join(__dirname, 'package.json')))
 /*
 	User constants
  */
-const testing = true;
+const testing = false;
 const verbose = true;
 // Link to source data
 const source = 'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports';
@@ -46,17 +46,23 @@ sync();
 // Updates and formats coronavirus dataset
 async function sync() {
     console.log(`Coronavirus Map Server Version: ${packageJson.version}\n`);
-    // downloads files from source
-    let files = await download();
-    // parses downloaded files into JSON
-    const days = await timeline.init(files);
-    // exports parsed data to json file
-    exportJson(days, path.join(exportPath, `timeline.json`));
-    // exports parsed data to csv file
-    exportCsv(days, path.join(exportPath, `timeline.csv`));
-    // exports parsed data to countries csv file
-    // exportCountryCsv(days, path.join(exportPath, `countries.csv`));
-    console.log('Sync completed successfully');
+    try {
+        // downloads files from source
+        let files = await download();
+        // parses downloaded files into JSON
+        const days = await timeline.init(files);
+        // exports parsed data to json file
+        exportJson(days, path.join(exportPath, `timeline.json`));
+        // exports parsed data to csv file
+        exportCsv(days, path.join(exportPath, `timeline.csv`));
+        // exports parsed data to countries csv file
+        // exportCountryCsv(days, path.join(exportPath, `countries.csv`));
+        console.log('Sync completed successfully');
+    } catch (error) {
+        console.error(error);
+        console.error('Sync failed');
+    }
+
 }
 
 // Downloads files from source and returns a data structure containing
@@ -80,7 +86,6 @@ async function download() {
     while (date.valueOf() < yesterday.valueOf()) {
         // Returns the download date formatted as used in the url for files
         const downloadDate = dateObjToDownloadDate(date);
-        const storageDate = dateObjToStorageDate(date);
         const filePath = source + '/' + downloadDate + '.csv';
 
         // Downloads the file content

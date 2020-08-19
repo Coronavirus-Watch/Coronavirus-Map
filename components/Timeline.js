@@ -18,6 +18,8 @@ class Timeline {
 	async init(files) {
 		// Fetches country details such as population for all countries
 		this.worldDetails = await fetchCountryDetails();
+		// console.log(this.worldDetails);
+		if (!this.worldDetails) throw "Error: Failed to store country details"
 		// Processes 
 		this.processFiles(files);
 		await this.genGeoJSON();
@@ -99,8 +101,8 @@ class Timeline {
 			// Extracts more constants from the region line
 			deaths: regionLine[4].trim(),
 			recovered: regionLine[5].trim(),
-			// Changes country nams from the ones stored to lookup data in the Rest countries API
-			searchName: this.dictRest(storageName)
+			// Changes country nams from the ones stored to lookup data in the GraphQL countries API
+			searchName: this.dictApi(storageName)
 		}
 		return countryStats;
 	}
@@ -120,7 +122,7 @@ class Timeline {
 			deaths: regionLine[8].trim(),
 			recovered: regionLine[9].trim(),
 			// Changes country nams from the ones stored to lookup data in the Rest countries API
-			searchName: this.dictRest(storageName)
+			searchName: this.dictApi(storageName)
 		}
 		return countryStats;
 	}
@@ -135,10 +137,12 @@ class Timeline {
 			if (typeof countryDetails !== "object") throw "Warning: Failed to find country details for: " + searchName;
 
 			// Extracts country details information
-			const { population, latlng, region: continent, altSpellings } = countryDetails;
+			const { population, location } = countryDetails;
+			const continent = countryDetails.subregion.region.name;
+			const altSpellings = countryDetails.alternativeSpellings.name;
 
 			// Adds data to the day
-			let country = day.addData(cases, deaths, recovered, storageName, storageDate, population, latlng, continent, altSpellings);
+			let country = day.addData(cases, deaths, recovered, storageName, storageDate, population, location, continent, altSpellings);
 
 			// 
 			this.compareData(country);
@@ -156,7 +160,7 @@ class Timeline {
 			const yesterday = this.days[this.days.length - 1];
 			countryYesterday = yesterday.countries[yesterday.searchForCountry(countryToday.name)];
 		}
-		catch {}
+		catch { }
 		finally {
 			if (!countryYesterday) countryYesterday = new Country();
 			// Compares data from this day and the previous to calculate increases
@@ -186,12 +190,15 @@ class Timeline {
 		try {
 			return this.worldDetails.filter(country => {
 				if (country.name === name) return true;
-				return country.altSpellings.includes(name);
+				if (country.nativeName === name) return true;
+				return country.alternativeSpellings.filter(alt => {
+					if (alt.name === name) return true;
+				})[0];
 			})[0];
 		}
-		catch(error) {
+		catch (error) {
 			console.error(`Error: Failed to search world country details. This is likely caused by an async/await error`);
-			// console.error(error);
+			console.error(error);
 		}
 	}
 
@@ -234,62 +241,53 @@ class Timeline {
 				return "China";
 			case "US":
 				return "United States";
-			case "UK":
-				return "United Kingdom";
-			case "Saint Barthelemy":
-				return "France";
-			case "occupied Palestinian territory":
-			case "Palestine":
-				return "Palestinian Territories";
+			case 'Korea South':
+				return 'South Korea'
 			case "North Macedonia":
-				return "Macedonia [FYROM]";
-			case "Iran (Islamic Republic of)":
-				return "Iran";
-			case "Hong Kong SAR":
-				return "Hong Kong";
-			case "Viet Nam":
-				return "Vietnam";
-			case "Macao SAR":
-				return "Macau";
+				return "Republic of Macedonia";
 			case "Russian Federation":
 				return "Russia";
-			case "Ivory Coast":
 			case "Cote d'Ivoire":
-				return "Côte dIvoire";
+				return "Côte d'Ivoire";
 			case "Taiwan*":
 				return "Taiwan";
-			case "North Ireland":
-				return "United Kingdom";
-			case "Republic of Ireland":
-				return "Ireland";
-			case "Holy See":
-				return "Vatican City";
+			case "Congo [DRC]":
+			case 'Congo (Kinshasa)':
+				return "Democratic Republic of the Congo";
+			case "Congo (Brazzaville)":
+				return "Republic of the Congo";
 			case "Czechia":
 				return "Czech Republic";
-			case "Reunion":
-				return "France";
-			case "Republic of Korea":
-			case 'Korea South':
-				return "South Korea";
-			case "St. Martin":
-			case "Saint Martin":
-				return "France";
-			case "Republic of Moldova":
-				return "Moldova";
-			case "Taipei and environs":
-				return "Taiwan";
-			case "Channel Islands":
-				return "United Kingdom";
-			case "Congo (Kinshasa)":
-				return "Congo [DRC]";
-			case 'Gambia':
-			case 'Gambia The':
-				return 'The Gambia';
-			case 'Bahamas':
+			case "Eswatini":
+				return "Swaziland";
+			case "West Bank and Gaza":
+				return "Palestine";
+			case 'Vatican City':
+				return 'Holy See'
+			case 'Hong Kong SAR':
+				return 'Hong Kong'
+			case 'North Ireland':
+				return 'United Kingdom'
+			case 'Saint Martin':
+				return 'St. Martin'
+			case 'occupied Palestinian territory':
+				return 'Palestine'
+			case 'Macao SAR':
+				return 'Macao'
+			case 'Taipei and environs':
+				return 'Taiwan'
+			case 'Saint Barthelemy':
+				return 'St. Barthelemy'
 			case 'Bahamas The':
-				return 'The Bahamas';
-			case 'Sao Tome and Principe':
-				return '';
+			case 'The Bahamas':
+				return 'Bahamas'
+			case 'Gambia The':
+			case 'The Gambia':
+				return 'Gambia'
+			case 'Cape Verde':
+				return 'Cabo Verde';
+			case 'Channel Islands':
+				return 'United Kingdom';
 			case 'MS Zaandam':
 				return 'United States';
 			case 'Cruise Ship':
@@ -301,32 +299,33 @@ class Timeline {
 		}
 	}
 
-	// Changes country names from the ones stored to lookup data in the Rest countries API
-	dictRest(name) {
+	// Changes country names from the ones stored to lookup data in the GraphQL countries API
+	dictApi(name) {
 		switch (name) {
-			case "Ireland":
-				return "IE";
-			case "Macedonia [FYROM]":
-				return "MK";
-			case "Vatican City":
-				return "Vatican";
-			case "Eswatini":
-				return "SZ";
-			case "Côte dIvoire":
-				return "Ivory Coast";
-			case "Congo [DRC]":
-				return "DRC";
-			case "Congo (Brazzaville)":
-				return "Congo-Brazzaville";
-			case "Kosovo":
-				return "Republic of Kosovo";
-			case "Palestinian Territories":
-			case "West Bank and Gaza":
-				return "Palestine";
-			case "Cabo Verde":
-				return "Cape Verde";
-			case "Timor-Leste":
-				return "East Timor";
+			case 'St. Martin':
+				return 'Saint-Martin'
+			case "South Korea":
+				return "Republic of Korea"
+			case 'Macau':
+				return 'Macao'
+			case 'Vietnam':
+				return 'Viet Nam'
+			case 'Palestine':
+				return 'State of Palestine'
+			case 'Syria':
+				return 'Syrian Arab Republic'
+			case 'Russia':
+				return 'Russian Federation'
+			case 'Kosovo':
+				return 'Republic of Kosovo'
+			case 'Republic of the Congo':
+				return 'Congo-Brazzaville'
+			case 'Democratic Republic of the Congo':
+				return 'Congo-Kinshasa'
+			case 'Iran':
+				return 'Islamic Republic of Iran'
+			case 'Brunei':
+				return 'Nation of Brunei'
 			default:
 				return name;
 		}

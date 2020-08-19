@@ -28,7 +28,7 @@ class Day {
 		// Runs if the country was not found in the database 
 		else {
 			// Creates and stores a new country in countries database
-			country = new Country(cases, deaths, recovered, countryName, population, [coordinates[1], coordinates[0]], continent, altSpellings);
+			country = new Country(cases, deaths, recovered, countryName, population, coordinates, continent, altSpellings);
 			this.countries.push(country);
 		}
 		// Stores data into continent and world objects
@@ -62,7 +62,7 @@ class Day {
 					type: "Feature",
 					geometry: {
 						type: "Point",
-						coordinates: this.countries[country].coordinates
+						coordinates: this.graphqlLocationToGeojson(country)
 					},
 					properties: {
 						title: this.countries[country].name,
@@ -77,6 +77,10 @@ class Day {
 				console.error(`Country Object:\n ${this.countries[country]}`);
 			}
 		}
+	}
+
+	graphqlLocationToGeojson(country) {
+		return [this.countries[country].coordinates.longitude, this.countries[country].coordinates.latitude];
 	}
 
 	getCountryCoordinates(country) {

@@ -12,14 +12,15 @@ module.exports = {
 
 	checkPath(path) {
 		if (typeof path !== 'string') return;
-		const directory = path.slice(0, path.lastIndexOf(`\\`));
+		const folderLastIndex = Math.max(path.lastIndexOf(`/`), path.lastIndexOf(`\\`));
+		const directory = path.slice(0, folderLastIndex);
 		module.exports.createDirectory(directory);
 	},
 
 	importFile(path) {
 		try {
 			const file = fs.readFileSync(path, 'utf8');
-			console.log(`File Imported: ${path}`);
+			// console.log(`File Imported: ${path}`);
 			return file;
 		} catch (error) {
 			console.error(`Error: Failed to import file: ${path}\n`);

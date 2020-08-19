@@ -20,15 +20,42 @@ module.exports = {
 
 	async fetchCountryDetails() {
 		return axios({
-			method: "GET",
-			url: "https://restcountries-v1.p.rapidapi.com/all",
+			method: "post",
+			url: "https://countries-274616.ew.r.appspot.com/",
+			data: {
+				query: `
+				query {
+					Country {
+					name
+					nativeName
+					population
+					location {
+					  latitude
+					  longitude
+					}
+					subregion {
+					  region {
+						name
+					  }
+					}
+					flag {
+					  emoji
+					  emojiUnicode
+					  svgFile
+					}
+					alternativeSpellings {
+					  name
+					}
+				  }
+				}
+				`
+			},
 			headers: {
-				"content-type": "application/octet-stream",
-				"x-rapidapi-host": "restcountries-v1.p.rapidapi.com",
-				"x-rapidapi-key": "42752e8809msh0edf75d88c1b7e7p177e3djsn05d91367a12a"
+				'Content-Type': 'application/json'
 			}
 		})
-			.then(async response => response.data)
+			.then(async response => response.data.data.Country)
+			// .then(async response => console.log(response.data))
 			.catch(error => console.error(`Error: Couldn't download world country details \n ${error}`));
 	}
 };
