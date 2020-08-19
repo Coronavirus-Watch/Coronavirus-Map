@@ -21,7 +21,7 @@ async function fetchCountry(search) {
 		.then(res => {
 			countryName.innerHTML = res.timeline[0][0].name;
 			console.log(res.timeline);
-			res.timeline.forEach(function(dayInArr, index, arr) {
+			res.timeline.forEach(function (dayInArr, index, arr) {
 				const day = dayInArr[0];
 				let dayDiv = document.createElement('DIV');
 				if (day.estimatedDay) {

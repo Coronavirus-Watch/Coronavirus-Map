@@ -6,7 +6,7 @@
 	width: 100%;
 }
 
-.mapboxgl-popup-content p{
+.mapboxgl-popup-content p {
 	margin: 0;
 }
 
@@ -16,6 +16,7 @@
 	padding: 1rem;
 	display: none;
 }
+
 .controller {
 	color: #eee;
 }

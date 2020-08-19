@@ -1,4 +1,5 @@
 @import url('all.css');
+
 .container {
 	color: white;
 	padding: 1.5rem 0;
@@ -19,10 +20,12 @@
 	background-color: rgb(80, 80, 80);
 	box-shadow: 1px 2px 1px 2px #666;
 }
+
 .day:hover {
 	background-color: rgb(115, 115, 115);
 	cursor: pointer;
 }
+
 .day:hover h5 {
 	color: #eee;
 	font-weight: bold;

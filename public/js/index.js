@@ -326,7 +326,7 @@ function updateMap(toggledLayers) {
 }
 
 // Creates event listener for dateSlider on whenever value is changed
-dateSlider.addEventListener('input', async function(e) {
+dateSlider.addEventListener('input', async function (e) {
 	let date = new Date(2020, 0, 22);
 	var day = 60 * 60 * 24 * 1000;
 
