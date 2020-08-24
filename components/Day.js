@@ -39,7 +39,7 @@ class Day {
 	}
 
 	processContinent(name, cases, deaths, recovered) {
-		// Searches for the contienent in the day
+		// Searches for the continent in the day
 		const index = this.searchForContinent(name);
 
 		// Runs if the continent was found in the database
